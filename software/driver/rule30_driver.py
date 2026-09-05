@@ -23,7 +23,7 @@ except ImportError:  # allows importing this module off-board for linting/tests
 # Must match hardware/build/system_bd's Address Editor assignment for the
 # custom IP -- check this in Vivado (Address Editor tab) after Connection
 # Automation, it will NOT always be 0x43C00000 if you add other PL peripherals.
-DEFAULT_BASE_ADDR = 0x43C00000
+DEFAULT_BASE_ADDR = 0x40000000
 DEFAULT_ADDR_RANGE = 0x1000
 
 SEED_REG_OFFSET = 0x00

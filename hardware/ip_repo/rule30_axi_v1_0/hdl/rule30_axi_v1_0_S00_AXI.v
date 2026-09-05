@@ -61,6 +61,10 @@ module rule30_axi_v1_0_S00_AXI #(
     reg                              axi_rvalid;
     reg [C_S_AXI_ADDR_WIDTH-1:0]     axi_araddr;
 
+    wire                        load_seed;
+    wire [C_S_AXI_DATA_WIDTH-1:0] seed_in;
+    wire [C_S_AXI_DATA_WIDTH-1:0] prng_out;
+
     localparam ADDR_LSB       = (C_S_AXI_DATA_WIDTH/32) + 1;
     localparam OPT_MEM_ADDR_BITS = 1; // 2 registers => 2 addressable words
 
@@ -132,6 +136,10 @@ module rule30_axi_v1_0_S00_AXI #(
         end else if (axi_arready && S_AXI_ARVALID && !axi_rvalid) begin
             axi_rvalid <= 1'b1;
             axi_rresp  <= 2'b0; // OKAY
+            case (S_AXI_ARADDR[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB])
+                2'b01:   axi_rdata <= prng_out; // 0x04 DATA_REG
+                default: axi_rdata <= {C_S_AXI_DATA_WIDTH{1'b0}};
+            endcase
         end else if (S_AXI_RVALID && S_AXI_RREADY) begin
             axi_rvalid <= 1'b0;
         end
@@ -140,10 +148,6 @@ module rule30_axi_v1_0_S00_AXI #(
     // ------------------------------------------------------------------
     // USER LOGIC #1: instantiate the verified Rule 30 core
     // ------------------------------------------------------------------
-    wire                        load_seed;
-    wire [C_S_AXI_DATA_WIDTH-1:0] seed_in;
-    wire [C_S_AXI_DATA_WIDTH-1:0] prng_out;
-
     // SEED_REG is offset 0x00 -> word address 0
     assign load_seed = slv_reg_wren && (axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] == 2'b00);
     assign seed_in    = S_AXI_WDATA;
@@ -155,17 +159,5 @@ module rule30_axi_v1_0_S00_AXI #(
         .seed_in   (seed_in),
         .prng_out  (prng_out)
     );
-
-    // ------------------------------------------------------------------
-    // USER LOGIC #2: mux the read data based on address
-    // DATA_REG is offset 0x04 -> word address 1. Any other address (or
-    // SEED_REG on read) safely returns 0 rather than X.
-    // ------------------------------------------------------------------
-    always @(*) begin
-        case (axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB])
-            2'b01:   axi_rdata = prng_out;   // 0x04 DATA_REG
-            default: axi_rdata = {C_S_AXI_DATA_WIDTH{1'b0}};
-        endcase
-    end
 
 endmodule

@@ -70,24 +70,26 @@ module tb_rule30_axi_bfm;
         input [C_S_AXI_ADDR_WIDTH-1:0] addr;
         input [C_S_AXI_DATA_WIDTH-1:0] data;
         begin
+            @(negedge s00_axi_aclk);
             s00_axi_awaddr  = addr;
             s00_axi_awvalid = 1'b1;
             s00_axi_wdata   = data;
             s00_axi_wvalid  = 1'b1;
+            s00_axi_bready  = 1'b1;
 
             while (!(s00_axi_awready && s00_axi_wready)) begin
                 @(posedge s00_axi_aclk);
             end
 
-            @(posedge s00_axi_aclk);
+            #1;
             s00_axi_awvalid = 1'b0;
             s00_axi_wvalid  = 1'b0;
 
-            s00_axi_bready = 1'b1;
             while (!s00_axi_bvalid) begin
                 @(posedge s00_axi_aclk);
             end
-            @(posedge s00_axi_aclk);
+
+            #1;
             s00_axi_bready = 1'b0;
         end
     endtask
@@ -96,6 +98,7 @@ module tb_rule30_axi_bfm;
         input [C_S_AXI_ADDR_WIDTH-1:0] addr;
         output [C_S_AXI_DATA_WIDTH-1:0] data;
         begin
+            @(negedge s00_axi_aclk);
             s00_axi_araddr  = addr;
             s00_axi_arvalid = 1'b1;
             s00_axi_rready  = 1'b1;
@@ -103,15 +106,15 @@ module tb_rule30_axi_bfm;
             while (!s00_axi_arready) begin
                 @(posedge s00_axi_aclk);
             end
-            @(posedge s00_axi_aclk);
-            s00_axi_arvalid = 1'b0;
 
             while (!s00_axi_rvalid) begin
                 @(posedge s00_axi_aclk);
             end
-            data = s00_axi_rdata;
-            @(posedge s00_axi_aclk);
-            s00_axi_rready = 1'b0;
+
+            #1 data = s00_axi_rdata;
+            s00_axi_arvalid = 1'b0;
+            @(negedge s00_axi_aclk);
+            s00_axi_rready  = 1'b0;
         end
     endtask
 
@@ -122,11 +125,9 @@ module tb_rule30_axi_bfm;
         repeat (3) @(posedge s00_axi_aclk);
         s00_axi_aresetn = 1;
 
-        // Byte-addressed AXI4-Lite register map: 0x00 seed, 0x04 readback.
         write_seed(4'h0, SEED);
 
-        // Load the seed and advance one clock to generation 1 before reading.
-        repeat (2) @(posedge s00_axi_aclk);
+        // The first read address cycle after the write captures generation 1.
         read_data(4'h4, read_value);
 
         if (read_value !== EXPECTED_GEN1) begin

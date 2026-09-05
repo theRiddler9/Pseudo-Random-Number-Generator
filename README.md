@@ -70,3 +70,34 @@ rule30-hw-prng/
 - **Vivado/PYNQ version mismatch** — the Vivado version used to build the bitstream
   must match what your board's PYNQ image expects. Check `pynq.__version__` on the
   board against Xilinx's compatibility table before building.
+
+## Vivado project setup
+
+Install Vivado with the Zynq-7000 device family, then install the PYNQ-Z2 board
+files so Vivado recognizes `tul.com.tw:pynq-z2:part0:1.0`. Run the scripts from
+the repository root; they resolve their paths independently of the current
+directory.
+
+Package the AXI peripheral into the local IP repository:
+
+```text
+vivado -mode batch -source scripts/package_rule30_ip.tcl
+```
+
+This creates `hardware/ip_repo/rule30_axi_v1_0/component.xml`. Create the
+project, block design, HDL wrapper, and bitstream with:
+
+```text
+vivado -mode batch -source scripts/setup_vivado_project.tcl
+```
+
+Open the generated project in the GUI:
+
+```text
+vivado hardware/build/vivado_project/rule30_prng.xpr
+```
+
+Confirm the custom IP is `xilinx.com:user:rule30_axi:1.0`, open **Address Editor**,
+and update `software/driver/rule30_driver.py` if the assigned base address is
+not `0x43C00000`. Before deployment, verify that implementation produced
+`hardware/build/output/rule30_prng.bit` and `rule30_prng.hwh`.
