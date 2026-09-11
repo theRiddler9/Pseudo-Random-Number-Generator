@@ -43,7 +43,10 @@ module rule30_axi_v1_0_S00_AXI #(
     output wire [C_S_AXI_DATA_WIDTH-1:0]        S_AXI_RDATA,
     output wire [1:0]                           S_AXI_RRESP,
     output wire                                 S_AXI_RVALID,
-    input  wire                                 S_AXI_RREADY
+    input  wire                                 S_AXI_RREADY,
+    
+    // User Ports
+    output wire [3:0]                           leds
 );
 
     // ------------------------------------------------------------------
@@ -159,5 +162,8 @@ module rule30_axi_v1_0_S00_AXI #(
         .seed_in   (seed_in),
         .prng_out  (prng_out)
     );
+    
+    // Output lower 4 bits of the PRNG to the LEDs
+    assign leds = prng_out[3:0];
 
 endmodule

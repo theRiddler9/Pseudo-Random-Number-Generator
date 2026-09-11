@@ -30,7 +30,10 @@ module rule30_axi_v1_0 #(
     output wire [C_S00_AXI_DATA_WIDTH-1:0]        s00_axi_rdata,
     output wire [1:0]                             s00_axi_rresp,
     output wire                                   s00_axi_rvalid,
-    input  wire                                   s00_axi_rready
+    input  wire                                   s00_axi_rready,
+    
+    // User Ports
+    output wire [3:0]                             leds
 );
 
     rule30_axi_v1_0_S00_AXI #(
@@ -57,7 +60,8 @@ module rule30_axi_v1_0 #(
         .S_AXI_RDATA   (s00_axi_rdata),
         .S_AXI_RRESP   (s00_axi_rresp),
         .S_AXI_RVALID  (s00_axi_rvalid),
-        .S_AXI_RREADY  (s00_axi_rready)
+        .S_AXI_RREADY  (s00_axi_rready),
+        .leds          (leds)
     );
 
 endmodule
