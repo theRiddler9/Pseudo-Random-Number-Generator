@@ -35,7 +35,7 @@ module tb_rule30_axi_bfm;
     wire                                     s00_axi_rvalid;
     reg                                      s00_axi_rready = 0;
 
-    reg [31:0] read_value;
+    reg [31:0] read_value = 0;
 
     rule30_axi_v1_0 #(
         .C_S00_AXI_DATA_WIDTH (C_S_AXI_DATA_WIDTH),
@@ -61,7 +61,8 @@ module tb_rule30_axi_bfm;
         .s00_axi_rdata   (s00_axi_rdata),
         .s00_axi_rresp   (s00_axi_rresp),
         .s00_axi_rvalid  (s00_axi_rvalid),
-        .s00_axi_rready  (s00_axi_rready)
+        .s00_axi_rready  (s00_axi_rready),
+        .leds            ()
     );
 
     always #5 s00_axi_aclk = ~s00_axi_aclk;

@@ -136,6 +136,7 @@ module rule30_axi_v1_0_S00_AXI #(
         if (!S_AXI_ARESETN) begin
             axi_rvalid <= 1'b0;
             axi_rresp  <= 2'b0;
+            axi_rdata  <= 0;
         end else if (axi_arready && S_AXI_ARVALID && !axi_rvalid) begin
             axi_rvalid <= 1'b1;
             axi_rresp  <= 2'b0; // OKAY
