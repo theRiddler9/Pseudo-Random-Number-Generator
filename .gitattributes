@@ -1,3 +1,4 @@
 * linguist-detectable=true
 *.html linguist-generated=true
 *.ipynb linguist-detectable=false
+*.xml linguist-generated=true
