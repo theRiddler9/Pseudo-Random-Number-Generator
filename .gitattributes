@@ -1,4 +1,10 @@
-* linguist-detectable=true
-*.html linguist-generated=true
+*.xml linguist-generated
+*.xml linguist-detectable=false
+*.html linguist-generated
+*.html linguist-detectable=false
 *.ipynb linguist-detectable=false
-*.xml linguist-generated=true
+
+# Force Linguist to count the Verilog testbenches (it ignores 'tb/' folders by default)
+hardware/ip_repo/rule30_axi_v1_0/tb/*.v linguist-vendored=false
+hardware/ip_repo/rule30_axi_v1_0/tb/*.v linguist-documentation=false
+hardware/ip_repo/rule30_axi_v1_0/tb/*.v linguist-detectable=true
